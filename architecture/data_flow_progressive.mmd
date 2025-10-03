@@ -1,0 +1,43 @@
+sequenceDiagram
+    participant Client
+    participant API as API Gateway
+    participant App as FastAPI App
+    participant DB as SQLite DB
+    participant AI as AI Service
+    participant Log as Logging
+    
+    %% Data Flow - Session Creation
+    Client->>API: POST /sessions
+    API->>App: Forward Request
+    App->>DB: INSERT session
+    DB-->>App: Session ID
+    App->>Log: Log session creation
+    App-->>API: Session created
+    API-->>Client: Response
+    
+    %% Data Flow - Analysis Request
+    Client->>API: POST /analyze
+    API->>App: Forward Request
+    App->>AI: Send data for analysis
+    AI->>AI: Process with AI models
+    AI-->>App: Analysis results
+    App->>DB: Store analysis logs
+    App->>Log: Log analysis
+    App-->>API: Analysis complete
+    API-->>Client: Results
+    
+    %% Data Flow - Session Retrieval
+    Client->>API: GET /sessions/{id}/logs
+    API->>App: Forward Request
+    App->>DB: SELECT logs
+    DB-->>App: Log data
+    App-->>API: Logs
+    API-->>Client: Response
+    
+    %% Data Flow - Health Check
+    Client->>API: GET /health
+    API->>App: Forward Request
+    App->>DB: Test connection
+    DB-->>App: Connection OK
+    App-->>API: Health status
+    API-->>Client: Health response

@@ -1,0 +1,86 @@
+graph TB
+    %% Security Architecture
+    subgraph "External Security"
+        SSL[SSL/TLS Certificates]
+        DDoS[DDoS Protection]
+        WAF[Web Application Firewall]
+    end
+    
+    subgraph "Authentication & Authorization"
+        AUTH[Authentication Service]
+        JWT[JWT Token Manager]
+        RBAC[Role-Based Access Control]
+        MFA[Multi-Factor Authentication]
+    end
+    
+    subgraph "API Security"
+        RATE_LIMIT[Rate Limiting]
+        API_KEY[API Key Management]
+        CORS[CORS Policy]
+        VALIDATION[Input Validation]
+    end
+    
+    subgraph "Data Security"
+        ENCRYPTION[Data Encryption]
+        HASHING[Password Hashing]
+        BACKUP[Secure Backup]
+        AUDIT[Audit Logging]
+    end
+    
+    subgraph "Infrastructure Security"
+        FIREWALL[Network Firewall]
+        VPN[VPN Access]
+        MONITORING[Security Monitoring]
+        ALERTS[Security Alerts]
+    end
+    
+    subgraph "AI Security"
+        MODEL_SEC[Model Security]
+        DATA_PRIVACY[Data Privacy]
+        AI_AUDIT[AI Audit Trail]
+        BIAS_CHECK[Bias Detection]
+    end
+    
+    %% Security Flow
+    SSL --> WAF
+    DDoS --> WAF
+    WAF --> AUTH
+    
+    AUTH --> JWT
+    AUTH --> MFA
+    JWT --> RBAC
+    
+    RBAC --> RATE_LIMIT
+    RATE_LIMIT --> API_KEY
+    API_KEY --> CORS
+    CORS --> VALIDATION
+    
+    VALIDATION --> ENCRYPTION
+    ENCRYPTION --> HASHING
+    HASHING --> BACKUP
+    BACKUP --> AUDIT
+    
+    AUDIT --> FIREWALL
+    FIREWALL --> VPN
+    VPN --> MONITORING
+    MONITORING --> ALERTS
+    
+    ALERTS --> MODEL_SEC
+    MODEL_SEC --> DATA_PRIVACY
+    DATA_PRIVACY --> AI_AUDIT
+    AI_AUDIT --> BIAS_CHECK
+    
+    %% Styling
+    classDef external fill:#ffebee
+    classDef auth fill:#e8f5e8
+    classDef api fill:#e3f2fd
+    classDef data fill:#fff3e0
+    classDef infra fill:#f3e5f5
+    classDef ai fill:#e0f2f1
+    
+    class SSL,DDoS,WAF external
+    class AUTH,JWT,RBAC,MFA auth
+    class RATE_LIMIT,API_KEY,CORS,VALIDATION api
+    class ENCRYPTION,HASHING,BACKUP,AUDIT data
+    class FIREWALL,VPN,MONITORING,ALERTS infra
+    class MODEL_SEC,DATA_PRIVACY,AI_AUDIT,BIAS_CHECK ai

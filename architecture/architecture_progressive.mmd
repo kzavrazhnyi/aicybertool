@@ -1,0 +1,37 @@
+graph TD
+    %% AI Cyber Tool - Прогресівна архітектура
+    subgraph "Phase 1: MVP (Current)"
+        A1[FastAPI App] --> B1[SQLite DB]
+        A1 --> C1[Loguru Logging]
+        A1 --> D1[Basic Sessions API]
+    end
+    
+    subgraph "Phase 2: Enhanced Features"
+        A2[FastAPI App] --> B2[PostgreSQL DB]
+        A2 --> C2[Structured Logging]
+        A2 --> D2[AI Agent Service]
+        A2 --> E2[Authentication]
+        A2 --> F2[API Gateway]
+    end
+    
+    subgraph "Phase 3: Full Platform"
+        A3[Microservices] --> B3[Distributed DB]
+        A3 --> C3[Centralized Logging]
+        A3 --> D3[AI Orchestration]
+        A3 --> E3[RBAC Security]
+        A3 --> F3[Load Balancer]
+        A3 --> G3[Monitoring]
+    end
+    
+    %% Connections between phases
+    A1 -.->|"Upgrade"| A2
+    A2 -.->|"Scale"| A3
+    
+    %% Styling
+    classDef phase1 fill:#e1f5fe
+    classDef phase2 fill:#f3e5f5
+    classDef phase3 fill:#e8f5e8
+    
+    class A1,B1,C1,D1 phase1
+    class A2,B2,C2,D2,E2,F2 phase2
+    class A3,B3,C3,D3,E3,F3,G3 phase3

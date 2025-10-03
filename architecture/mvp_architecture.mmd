@@ -1,0 +1,80 @@
+graph TB
+    %% MVP Architecture with RabbitMQ
+    subgraph "External Layer"
+        FLUTTER[Flutter App]
+        EXTERNAL_API[External APIs<br/>Jira, GitHub, etc.]
+    end
+    
+    subgraph "API Gateway Layer"
+        API_GW[API Gateway<br/>Authentication & Authorization]
+    end
+    
+    subgraph "Core Services"
+        CYBER_MGMT[Cybernetic Management<br/>Auth Service + Tool Registry]
+        AI_AGENT[AI Agent Service<br/>Task Orchestrator]
+        INTEGRATIONS[Integrations Service<br/>External API Handler]
+    end
+    
+    subgraph "Message Bus"
+        RABBITMQ[RabbitMQ<br/>Message Bus]
+        
+        subgraph "Exchanges"
+            CMD_EX[commands.exchange]
+            EVT_EX[events.exchange]
+        end
+        
+        subgraph "Queues"
+            CMD_Q[Command Queues]
+            EVT_Q[Event Queues]
+        end
+    end
+    
+    subgraph "Data Layer"
+        POSTGRES[(PostgreSQL<br/>Main Database)]
+        REDIS[(Redis<br/>Cache & Sessions)]
+    end
+    
+    %% External connections
+    FLUTTER --> API_GW
+    EXTERNAL_API --> INTEGRATIONS
+    
+    %% API Gateway connections
+    API_GW --> CYBER_MGMT
+    API_GW --> AI_AGENT
+    
+    %% Core service connections
+    AI_AGENT --> CYBER_MGMT
+    AI_AGENT --> RABBITMQ
+    INTEGRATIONS --> RABBITMQ
+    
+    %% Message Bus connections
+    RABBITMQ --> CMD_EX
+    RABBITMQ --> EVT_EX
+    CMD_EX --> CMD_Q
+    EVT_EX --> EVT_Q
+    
+    %% Data connections
+    CYBER_MGMT --> POSTGRES
+    AI_AGENT --> POSTGRES
+    INTEGRATIONS --> POSTGRES
+    API_GW --> REDIS
+    CYBER_MGMT --> REDIS
+    
+    %% Message flow
+    AI_AGENT -.->|Publish Commands| CMD_EX
+    INTEGRATIONS -.->|Consume Commands| CMD_Q
+    INTEGRATIONS -.->|Publish Events| EVT_EX
+    AI_AGENT -.->|Consume Events| EVT_Q
+    
+    %% Styling
+    classDef external fill:#e3f2fd
+    classDef gateway fill:#f3e5f5
+    classDef core fill:#e8f5e8
+    classDef message fill:#fff3e0
+    classDef data fill:#fce4ec
+    
+    class FLUTTER,EXTERNAL_API external
+    class API_GW gateway
+    class CYBER_MGMT,AI_AGENT,INTEGRATIONS core
+    class RABBITMQ,CMD_EX,EVT_EX,CMD_Q,EVT_Q message
+    class POSTGRES,REDIS data

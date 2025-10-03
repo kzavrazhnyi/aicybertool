@@ -1,0 +1,53 @@
+sequenceDiagram
+    participant UI as Flutter App
+    participant GW as API Gateway
+    participant CM as Cybernetic Management
+    participant Agent as AI Agent Service
+    participant RabbitMQ as Message Bus
+    participant Integrations as Integrations Service
+    participant Jira as External Jira API
+    
+    %% Task Creation Flow
+    UI->>GW: POST /api/agent/tasks<br/>{"task": "Find project 'Orion' in Jira"}
+    GW->>CM: Validate user & permissions
+    CM-->>GW: User authenticated
+    GW->>Agent: Forward task request
+    
+    Note over Agent: Agent creates task, plans step:<br/>"call Jira integration tool"
+    
+    %% Command Publishing
+    Agent->>RabbitMQ: Publish COMMAND<br/>Exchange: commands.exchange<br/>Routing: integrations.find_jira_project<br/>Body: {"project_name": "Orion", "task_id": "uuid-123"}
+    
+    Agent-->>GW: 202 Accepted<br/>{"status": "Task accepted", "task_id": "uuid-123"}
+    GW-->>UI: Task accepted, processing...
+    
+    %% Command Consumption
+    RabbitMQ->>Integrations: Consume COMMAND<br/>find_jira_project
+    Note over Integrations: Execute HTTP request to Jira API
+    
+    Integrations->>Jira: GET /rest/api/2/project/Orion
+    Jira-->>Integrations: Project data response
+    
+    %% Event Publishing
+    Integrations->>RabbitMQ: Publish EVENT<br/>Exchange: events.exchange<br/>Routing: integrations.jira_project_found<br/>Body: {"task_id": "uuid-123", "data": {...}}
+    
+    %% Event Consumption
+    RabbitMQ->>Agent: Consume EVENT<br/>jira_project_found
+    Note over Agent: Update task status,<br/>save result, prepare next step
+    
+    %% Task Completion
+    Agent->>Agent: Task completed
+    Agent-->>GW: Task result available
+    GW-->>UI: GET /api/agent/tasks/uuid-123/result
+    UI->>GW: GET /api/agent/tasks/uuid-123/result
+    GW->>Agent: Get task result
+    Agent-->>GW: Task result data
+    GW-->>UI: Display result to user
+    
+    %% Error Handling (Optional)
+    Note over Integrations,Jira: If Jira API fails:
+    Integrations->>RabbitMQ: Publish EVENT<br/>Routing: integrations.jira_error<br/>Body: {"task_id": "uuid-123", "error": "API unavailable"}
+    RabbitMQ->>Agent: Consume error event
+    Agent->>Agent: Update task status to failed
+    Agent-->>GW: Task failed
+    GW-->>UI: Error notification

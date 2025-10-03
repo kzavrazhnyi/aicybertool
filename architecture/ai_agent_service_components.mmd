@@ -1,0 +1,74 @@
+graph TB
+    %% AI Agent Service Components
+    subgraph "AI Agent Service"
+        AGENT_MGR[Agent Manager]
+        TASK_QUEUE[Task Queue]
+        WORKER_POOL[Worker Pool]
+        
+        subgraph "AI Workers"
+            WORKER1[Analysis Worker]
+            WORKER2[Threat Detection Worker]
+            WORKER3[Response Worker]
+        end
+        
+        subgraph "AI Models"
+            LLM[Large Language Model]
+            CLASSIFIER[Threat Classifier]
+            ANALYZER[Code Analyzer]
+        end
+    end
+    
+    subgraph "Data Processing"
+        PREPROCESSOR[Data Preprocessor]
+        FEATURE_EXTRACTOR[Feature Extractor]
+        VALIDATOR[Data Validator]
+    end
+    
+    subgraph "Storage & Cache"
+        MODEL_CACHE[Model Cache]
+        RESULT_STORE[Result Store]
+        TEMP_STORAGE[Temporary Storage]
+    end
+    
+    subgraph "External AI Services"
+        OPENAI[OpenAI API]
+        ANTHROPIC[Anthropic API]
+        LOCAL_MODEL[Local Model]
+    end
+    
+    %% Connections
+    AGENT_MGR --> TASK_QUEUE
+    TASK_QUEUE --> WORKER_POOL
+    
+    WORKER_POOL --> WORKER1
+    WORKER_POOL --> WORKER2
+    WORKER_POOL --> WORKER3
+    
+    WORKER1 --> LLM
+    WORKER2 --> CLASSIFIER
+    WORKER3 --> ANALYZER
+    
+    WORKER1 --> PREPROCESSOR
+    WORKER2 --> FEATURE_EXTRACTOR
+    WORKER3 --> VALIDATOR
+    
+    LLM --> MODEL_CACHE
+    CLASSIFIER --> RESULT_STORE
+    ANALYZER --> TEMP_STORAGE
+    
+    LLM --> OPENAI
+    LLM --> ANTHROPIC
+    CLASSIFIER --> LOCAL_MODEL
+    
+    %% Styling
+    classDef agent fill:#e1f5fe
+    classDef worker fill:#f3e5f5
+    classDef model fill:#e8f5e8
+    classDef storage fill:#fff3e0
+    classDef external fill:#fce4ec
+    
+    class AGENT_MGR,TASK_QUEUE,WORKER_POOL agent
+    class WORKER1,WORKER2,WORKER3 worker
+    class LLM,CLASSIFIER,ANALYZER model
+    class MODEL_CACHE,RESULT_STORE,TEMP_STORAGE storage
+    class OPENAI,ANTHROPIC,LOCAL_MODEL external

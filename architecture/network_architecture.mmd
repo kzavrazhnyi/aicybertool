@@ -1,0 +1,84 @@
+graph TB
+    %% Network Architecture
+    subgraph "Internet"
+        USERS[Users]
+        EXTERNAL_API[External APIs]
+    end
+    
+    subgraph "DMZ - Demilitarized Zone"
+        LB[Load Balancer<br/>Port 80/443]
+        WAF[Web Application Firewall]
+    end
+    
+    subgraph "Application Tier"
+        APP1[FastAPI Instance 1<br/>Port 8000]
+        APP2[FastAPI Instance 2<br/>Port 8000]
+        APP3[FastAPI Instance 3<br/>Port 8000]
+    end
+    
+    subgraph "Data Tier"
+        DB_PRIMARY[SQLite Primary<br/>Port 5432]
+        DB_REPLICA[SQLite Replica<br/>Port 5432]
+        REDIS[Redis Cache<br/>Port 6379]
+    end
+    
+    subgraph "Monitoring Tier"
+        PROMETHEUS[Prometheus<br/>Port 9090]
+        GRAFANA[Grafana<br/>Port 3000]
+        LOG_AGG[Log Aggregator<br/>Port 9200]
+    end
+    
+    subgraph "AI Services Tier"
+        AI_SERVICE[AI Service<br/>Port 8001]
+        MODEL_SERVER[Model Server<br/>Port 8002]
+    end
+    
+    %% Network Connections
+    USERS --> LB
+    EXTERNAL_API --> WAF
+    
+    LB --> WAF
+    WAF --> APP1
+    WAF --> APP2
+    WAF --> APP3
+    
+    APP1 --> DB_PRIMARY
+    APP2 --> DB_PRIMARY
+    APP3 --> DB_PRIMARY
+    
+    APP1 --> REDIS
+    APP2 --> REDIS
+    APP3 --> REDIS
+    
+    APP1 --> AI_SERVICE
+    APP2 --> AI_SERVICE
+    APP3 --> AI_SERVICE
+    
+    AI_SERVICE --> MODEL_SERVER
+    
+    DB_PRIMARY --> DB_REPLICA
+    
+    APP1 --> PROMETHEUS
+    APP2 --> PROMETHEUS
+    APP3 --> PROMETHEUS
+    
+    PROMETHEUS --> GRAFANA
+    
+    APP1 --> LOG_AGG
+    APP2 --> LOG_AGG
+    APP3 --> LOG_AGG
+    
+    %% Styling
+    classDef internet fill:#e3f2fd
+    classDef dmz fill:#f3e5f5
+    classDef app fill:#e8f5e8
+    classDef data fill:#fff3e0
+    classDef monitor fill:#fce4ec
+    classDef ai fill:#e0f2f1
+    
+    class USERS,EXTERNAL_API internet
+    class LB,WAF dmz
+    class APP1,APP2,APP3 app
+    class DB_PRIMARY,DB_REPLICA,REDIS data
+    class PROMETHEUS,GRAFANA,LOG_AGG monitor
+    class AI_SERVICE,MODEL_SERVER ai

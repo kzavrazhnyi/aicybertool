@@ -3,7 +3,10 @@ AI Cyber Tool - Main Application
 Простий FastAPI додаток для роботи з AI та кібербезпекою
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from loguru import logger
 import sqlite3
 from pathlib import Path
@@ -26,9 +29,16 @@ else:
 # Створення FastAPI додатку
 app = FastAPI(
     title="AI Cyber Tool",
-    description="AI Cyber Tool - проект для роботи з AI та кібербезпечністю",
+    description="AI Cyber Tool - комплексна система управління цифровою трансформацією, що поєднує штучний інтелект, кібернетичне управління та автоматизоване реагування на загрози. Проект побудований на архітектурі мікросервісів з прогресивним підходом до безпеки та масштабованості.",
     version="1.0.0"
 )
+
+# Налаштування статичних файлів та шаблонів
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/architecture", StaticFiles(directory="architecture"), name="architecture")
+
+# Налаштування шаблонів
+templates = Jinja2Templates(directory="templates")
 
 # Створення директорії для логів
 Path("logs").mkdir(exist_ok=True)
@@ -78,13 +88,28 @@ async def startup_event():
     logger.info("AI Cyber Tool is starting up...")
     init_database()
 
-@app.get("/")
-async def root():
-    """Коренева сторінка"""
-    return {
-        "message": "Welcome to<｜tool▁sep｜>AI Cyber Tool!",
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    """Коренева сторінка з меню"""
+    return templates.TemplateResponse("index.html", {
+        "request": request,
         "version": "1.0.0",
         "status": "running"
+    })
+
+@app.get("/api")
+async def api_root():
+    """API коренева сторінка"""
+    return {
+        "message": "Welcome to AI Cyber Tool!",
+        "version": "1.0.0",
+        "status": "running",
+        "endpoints": {
+            "tech_map": "/tech-map",
+            "docs": "/docs",
+            "health": "/health",
+            "api_diagrams": "/tech-map/api"
+        }
     }
 
 @app.get("/health")
@@ -191,6 +216,114 @@ async def get_session_logs(session_id: int):
     except Exception as e:
         logger.error(f"Failed to get session logs: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve session logs")
+
+@app.get("/tech-map", response_class=HTMLResponse)
+async def tech_map(request: Request, lang: str = "uk"):
+    """Технічна карта проекту"""
+    try:
+        # Перевірити чи існує файл документації
+        doc_path = f"architecture/{lang}/technical_map.md"
+        if not os.path.exists(doc_path):
+            # Якщо файл не існує, використати українську версію
+            doc_path = "architecture/uk/technical_map.md"
+        
+        # Читати Markdown файл
+        with open(doc_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Список діаграм
+        diagrams = [
+            {
+                "name": "Прогресівна архітектура" if lang == "uk" else "Progressive Architecture",
+                "file": "architecture_progressive",
+                "description": "Розвиток проекту в три етапи" if lang == "uk" else "Project evolution in three phases"
+            },
+            {
+                "name": "Компоненти API Gateway" if lang == "uk" else "API Gateway Components", 
+                "file": "api_gateway_components",
+                "description": "Архітектура шлюзу API" if lang == "uk" else "API Gateway architecture"
+            },
+            {
+                "name": "AI Agent Service" if lang == "uk" else "AI Agent Service Components",
+                "file": "ai_agent_service_components", 
+                "description": "Компоненти AI сервісу" if lang == "uk" else "AI service components"
+            },
+            {
+                "name": "Потік даних" if lang == "uk" else "Data Flow",
+                "file": "data_flow_progressive",
+                "description": "Послідовність взаємодії" if lang == "uk" else "Interaction sequence"
+            },
+            {
+                "name": "Мережева архітектура" if lang == "uk" else "Network Architecture",
+                "file": "network_architecture",
+                "description": "Топологія мережі" if lang == "uk" else "Network topology"
+            },
+            {
+                "name": "Модель даних" if lang == "uk" else "Data Model",
+                "file": "data_model",
+                "description": "ER діаграма бази даних" if lang == "uk" else "Database ER diagram"
+            },
+            {
+                "name": "Архітектура безпеки" if lang == "uk" else "Security Architecture",
+                "file": "security_architecture",
+                "description": "Рівні безпеки системи" if lang == "uk" else "System security layers"
+            },
+            {
+                "name": "MVP Архітектура з RabbitMQ" if lang == "uk" else "MVP Architecture with RabbitMQ",
+                "file": "mvp_architecture",
+                "description": "Мінімальний набір сервісів для MVP" if lang == "uk" else "Minimum viable product services"
+            },
+            {
+                "name": "RabbitMQ Workflow" if lang == "uk" else "RabbitMQ Workflow",
+                "file": "rabbitmq_workflow",
+                "description": "Послідовність виконання завдань" if lang == "uk" else "Task execution sequence"
+            },
+            {
+                "name": "Компоненти MVP Сервісів" if lang == "uk" else "MVP Services Components",
+                "file": "mvp_services_components",
+                "description": "Структура кожного сервісу" if lang == "uk" else "Structure of each service"
+            }
+        ]
+        
+        return templates.TemplateResponse("tech_map.html", {
+            "request": request,
+            "content": content,
+            "diagrams": diagrams,
+            "lang": lang
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to load tech map: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load technical map")
+
+@app.get("/tech-map/api")
+async def tech_map_api():
+    """API для отримання інформації про технічну карту"""
+    try:
+        diagrams = []
+        architecture_dir = Path("architecture")
+        
+        # Знайти всі PNG файли
+        for png_file in architecture_dir.glob("*.png"):
+            svg_file = png_file.with_suffix('.svg')
+            mmd_file = png_file.with_suffix('.mmd')
+            
+            diagrams.append({
+                "name": png_file.stem,
+                "png_url": f"/architecture/{png_file.name}",
+                "svg_url": f"/architecture/{svg_file.name}" if svg_file.exists() else None,
+                "source_url": f"/architecture/{mmd_file.name}" if mmd_file.exists() else None
+            })
+        
+        return {
+            "diagrams": diagrams,
+            "count": len(diagrams),
+            "languages": ["uk", "en"]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get tech map API: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve technical map data")
 
 if __name__ == "__main__":
     import uvicorn

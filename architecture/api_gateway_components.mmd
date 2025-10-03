@@ -1,0 +1,66 @@
+graph TB
+    %% API Gateway Components
+    subgraph "Client Layer"
+        WEB[Web Browser]
+        MOBILE[Mobile App]
+        API_CLIENT[API Client]
+    end
+    
+    subgraph "API Gateway Layer"
+        LB[Load Balancer]
+        GW[API Gateway]
+        AUTH[Authentication Service]
+        RATE[Rate Limiting]
+        CACHE[Response Cache]
+    end
+    
+    subgraph "Application Layer"
+        FASTAPI[FastAPI Application]
+        SESSIONS[Session Management]
+        LOGS[Logging Service]
+    end
+    
+    subgraph "Data Layer"
+        SQLITE[SQLite Database]
+        FILES[File Storage]
+        LOGS_FILE[Log Files]
+    end
+    
+    subgraph "External Services"
+        AI_API[AI Services]
+        CYBER_API[Cyber Security APIs]
+    end
+    
+    %% Connections
+    WEB --> LB
+    MOBILE --> LB
+    API_CLIENT --> LB
+    
+    LB --> GW
+    GW --> AUTH
+    GW --> RATE
+    GW --> CACHE
+    
+    GW --> FASTAPI
+    FASTAPI --> SESSIONS
+    FASTAPI --> LOGS
+    
+    SESSIONS --> SQLITE
+    LOGS --> LOGS_FILE
+    FASTAPI --> FILES
+    
+    FASTAPI --> AI_API
+    FASTAPI --> CYBER_API
+    
+    %% Styling
+    classDef client fill:#e3f2fd
+    classDef gateway fill:#f3e5f5
+    classDef app fill:#e8f5e8
+    classDef data fill:#fff3e0
+    classDef external fill:#fce4ec
+    
+    class WEB,MOBILE,API_CLIENT client
+    class LB,GW,AUTH,RATE,CACHE gateway
+    class FASTAPI,SESSIONS,LOGS app
+    class SQLITE,FILES,LOGS_FILE data
+    class AI_API,CYBER_API external

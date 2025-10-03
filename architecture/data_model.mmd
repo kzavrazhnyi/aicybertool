@@ -1,0 +1,101 @@
+erDiagram
+    %% Data Model for AI Cyber Tool
+    
+    SESSIONS {
+        int id PK "Primary Key"
+        string session_name "Session Name"
+        timestamp created_at "Creation Time"
+        string status "Status (active/inactive)"
+        string user_id FK "User ID"
+        json metadata "Additional metadata"
+    }
+    
+    ANALYSIS_LOGS {
+        int id PK "Primary Key"
+        int session_id FK "Session ID"
+        string log_type "Log Type"
+        string message "Log Message"
+        timestamp timestamp "Log Timestamp"
+        json context "Additional context"
+        string severity "Severity Level"
+    }
+    
+    USERS {
+        int id PK "Primary Key"
+        string username "Username"
+        string email "Email Address"
+        string password_hash "Hashed Password"
+        timestamp created_at "Creation Time"
+        timestamp last_login "Last Login"
+        string role "User Role"
+        boolean is_active "Active Status"
+    }
+    
+    AI_ANALYSES {
+        int id PK "Primary Key"
+        int session_id FK "Session ID"
+        string analysis_type "Analysis Type"
+        json input_data "Input Data"
+        json output_data "Output Data"
+        string model_used "AI Model Used"
+        float confidence "Confidence Score"
+        timestamp created_at "Creation Time"
+        int processing_time "Processing Time (ms)"
+    }
+    
+    THREAT_DETECTIONS {
+        int id PK "Primary Key"
+        int analysis_id FK "Analysis ID"
+        string threat_type "Threat Type"
+        string severity "Severity Level"
+        json indicators "Threat Indicators"
+        json recommendations "Recommendations"
+        boolean is_false_positive "False Positive Flag"
+        timestamp detected_at "Detection Time"
+    }
+    
+    SYSTEM_LOGS {
+        int id PK "Primary Key"
+        string component "System Component"
+        string level "Log Level"
+        string message "Log Message"
+        json context "Additional Context"
+        timestamp timestamp "Log Timestamp"
+        string trace_id "Trace ID"
+    }
+    
+    %% Relationships
+    SESSIONS ||--o{ ANALYSIS_LOGS : "has"
+    SESSIONS ||--o{ AI_ANALYSES : "contains"
+    USERS ||--o{ SESSIONS : "creates"
+    AI_ANALYSES ||--o{ THREAT_DETECTIONS : "generates"
+    
+    %% Indexes and Constraints
+    SESSIONS {
+        index idx_sessions_user_id "User ID Index"
+        index idx_sessions_created_at "Creation Time Index"
+    }
+    
+    ANALYSIS_LOGS {
+        index idx_logs_session_id "Session ID Index"
+        index idx_logs_timestamp "Timestamp Index"
+        index idx_logs_type "Log Type Index"
+    }
+    
+    AI_ANALYSES {
+        index idx_analyses_session_id "Session ID Index"
+        index idx_analyses_type "Analysis Type Index"
+        index idx_analyses_created_at "Creation Time Index"
+    }
+    
+    THREAT_DETECTIONS {
+        index idx_threats_analysis_id "Analysis ID Index"
+        index idx_threats_type "Threat Type Index"
+        index idx_threats_severity "Severity Index"
+    }
+    
+    SYSTEM_LOGS {
+        index idx_system_logs_component "Component Index"
+        index idx_system_logs_timestamp "Timestamp Index"
+        index idx_system_logs_level "Log Level Index"
+    }

@@ -1,0 +1,80 @@
+graph TB
+    %% MVP Services Components Detail
+    
+    subgraph "API Gateway Service"
+        GW_AUTH[Authentication<br/>JWT Validation]
+        GW_AUTHZ[Authorization<br/>RBAC Check]
+        GW_RATE[Rate Limiting<br/>Request Throttling]
+        GW_ROUTE[Request Routing<br/>Service Discovery]
+        GW_CACHE[Response Cache<br/>Redis Integration]
+    end
+    
+    subgraph "Cybernetic Management Service"
+        CM_AUTH[Auth Service<br/>User Management]
+        CM_TOOLS[Tool Registry<br/>Service Catalog]
+        CM_PERMS[Permissions<br/>Access Control]
+        CM_USERS[User Management<br/>Profiles & Roles]
+        CM_CONFIG[Configuration<br/>System Settings]
+    end
+    
+    subgraph "AI Agent Service"
+        AGENT_PLANNER[Task Planner<br/>Step Decomposition]
+        AGENT_EXEC[Task Executor<br/>Command Publisher]
+        AGENT_MONITOR[Task Monitor<br/>Event Consumer]
+        AGENT_STATE[State Manager<br/>Task Status]
+        AGENT_MEMORY[Memory Store<br/>Context & History]
+    end
+    
+    subgraph "Integrations Service"
+        INT_JIRA[Jira Integration<br/>Project Management]
+        INT_GITHUB[GitHub Integration<br/>Code Repository]
+        INT_SLACK[Slack Integration<br/>Communication]
+        INT_WEBHOOK[Webhook Handler<br/>Generic HTTP]
+        INT_CONFIG[Integration Config<br/>API Credentials]
+    end
+    
+    subgraph "Message Bus Components"
+        MB_EXCHANGES[Exchanges<br/>commands & events]
+        MB_QUEUES[Queues<br/>Service-specific]
+        MB_ROUTING[Routing<br/>Message Distribution]
+        MB_PERSISTENCE[Message Persistence<br/>Durability]
+        MB_MONITORING[Monitoring<br/>Queue Health]
+    end
+    
+    %% Internal connections
+    GW_AUTH --> GW_AUTHZ
+    GW_AUTHZ --> GW_RATE
+    GW_RATE --> GW_ROUTE
+    GW_ROUTE --> GW_CACHE
+    
+    CM_AUTH --> CM_USERS
+    CM_USERS --> CM_PERMS
+    CM_TOOLS --> CM_CONFIG
+    
+    AGENT_PLANNER --> AGENT_EXEC
+    AGENT_EXEC --> AGENT_MONITOR
+    AGENT_MONITOR --> AGENT_STATE
+    AGENT_STATE --> AGENT_MEMORY
+    
+    INT_JIRA --> INT_CONFIG
+    INT_GITHUB --> INT_CONFIG
+    INT_SLACK --> INT_CONFIG
+    INT_WEBHOOK --> INT_CONFIG
+    
+    MB_EXCHANGES --> MB_ROUTING
+    MB_ROUTING --> MB_QUEUES
+    MB_QUEUES --> MB_PERSISTENCE
+    MB_PERSISTENCE --> MB_MONITORING
+    
+    %% Styling
+    classDef gateway fill:#e3f2fd
+    classDef management fill:#f3e5f5
+    classDef agent fill:#e8f5e8
+    classDef integrations fill:#fff3e0
+    classDef messagebus fill:#fce4ec
+    
+    class GW_AUTH,GW_AUTHZ,GW_RATE,GW_ROUTE,GW_CACHE gateway
+    class CM_AUTH,CM_TOOLS,CM_PERMS,CM_USERS,CM_CONFIG management
+    class AGENT_PLANNER,AGENT_EXEC,AGENT_MONITOR,AGENT_STATE,AGENT_MEMORY agent
+    class INT_JIRA,INT_GITHUB,INT_SLACK,INT_WEBHOOK,INT_CONFIG integrations
+    class MB_EXCHANGES,MB_QUEUES,MB_ROUTING,MB_PERSISTENCE,MB_MONITORING messagebus
