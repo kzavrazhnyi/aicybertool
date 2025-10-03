@@ -1,0 +1,32 @@
+# Основні залежністьі проекту
+# Додавайте нові пакети тут після активації віртуального середовища
+
+# FastAPI (для веb API)
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# SQLAlchemy для роботи з базою даних
+sqlalchemy==2.0.23
+alembic==1.12.1
+
+# SQLite та PostgreSQL драйвери
+sqlite3
+psycopg2-binary==2.9.9
+
+# Pydantic для валідації даних
+pydantic==2.5.0
+
+# Requests для HTTP клієнта
+requests==2.31.0
+
+# pytest для тестування
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# Логування
+loguru==0.7.2
+
+# Додаткові утиліти
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
