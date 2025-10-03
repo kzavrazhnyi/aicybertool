@@ -155,5 +155,5 @@ Thumbs.db
 # Project specific
 *.sqlite
 *.db
-logs/
+logs/*.log
 temp/

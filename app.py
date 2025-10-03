@@ -34,14 +34,22 @@ app = FastAPI(
 )
 
 # Налаштування статичних файлів та шаблонів
-app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/architecture", StaticFiles(directory="architecture"), name="architecture")
+# Створюємо папки якщо вони не існують
+Path("static").mkdir(exist_ok=True)
+Path("architecture").mkdir(exist_ok=True)
+
+# Монтуємо статичні файли тільки якщо папки існують
+if Path("static").exists():
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+if Path("architecture").exists():
+    app.mount("/architecture", StaticFiles(directory="architecture"), name="architecture")
 
 # Налаштування шаблонів
 templates = Jinja2Templates(directory="templates")
 
-# Створення директорії для логів
-Path("logs").mkdir(exist_ok=True)
+# Створення директорії для логів (тільки локально)
+if not os.getenv("RENDER"):
+    Path("logs").mkdir(exist_ok=True)
 
 # Створення бази даних SQLite
 DATABASE_PATH = os.getenv("DATABASE_URL", "app.db")
