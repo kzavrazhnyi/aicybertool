@@ -7,9 +7,21 @@ from fastapi import FastAPI, HTTPException
 from loguru import logger
 import sqlite3
 from pathlib import Path
+import os
+import sys
+from dotenv import load_dotenv
+
+# Завантаження змінних оточення
+load_dotenv()
 
 # Налаштування логування
-logger.add("logs/app.log", rotation="10 MB", retention="7 days")
+if os.getenv("RENDER"):
+    # На Render використовуємо стандартне логування
+    logger.add(sys.stdout, level="INFO")
+else:
+    # Локально використовуємо файлове логування
+    Path("logs").mkdir(exist_ok=True)
+    logger.add("logs/app.log", rotation="10 MB", retention="7 days")
 
 # Створення FastAPI додатку
 app = FastAPI(
@@ -22,7 +34,7 @@ app = FastAPI(
 Path("logs").mkdir(exist_ok=True)
 
 # Створення бази даних SQLite
-DATABASE_PATH = "app.db"
+DATABASE_PATH = os.getenv("DATABASE_URL", "app.db")
 
 def init_database():
     """Ініціалізація бази даних SQLite"""
