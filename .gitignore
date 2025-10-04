@@ -157,3 +157,6 @@ Thumbs.db
 *.db
 logs/*.log
 temp/
+tmp/
+*.tmp
+*.temp
