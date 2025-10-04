@@ -121,10 +121,12 @@ class EventMessage:
 class MessageBusConfig:
     """Конфігурація Message Bus"""
     
-    def __init__(self):
-        self.rabbitmq_url = "amqp://localhost:5672/"
-        self.commands_exchange = "commands.exchange"
-        self.events_exchange = "events.exchange"
+    def __init__(self, rabbitmq_url: str = "amqp://localhost:5672/", 
+                 commands_exchange: str = "commands.exchange",
+                 events_exchange: str = "events.exchange"):
+        self.rabbitmq_url = rabbitmq_url
+        self.commands_exchange = commands_exchange
+        self.events_exchange = events_exchange
         self.dead_letter_exchange = "dead-letter.exchange"
         
         # Queue configurations

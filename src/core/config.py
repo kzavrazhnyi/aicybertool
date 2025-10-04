@@ -6,6 +6,7 @@ AI Cyber Tool - Configuration
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from urllib.parse import urlparse, urlunparse
+from pydantic import field_validator
 
 
 def mask_url_credentials(url: str) -> str:
@@ -71,6 +72,17 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
+    
+    @field_validator('render_env', mode='before')
+    @classmethod
+    def validate_render_env(cls, v):
+        """Валідація render_env - конвертуємо рядок в булеве значення"""
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            # На Render.com змінна може мати значення 'python-3' або інші
+            return v.lower() in ('true', '1', 'yes', 'on', 'python-3')
+        return False
 
 
 @lru_cache()
