@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="{% if lang == 'uk' %}uk{% else %}en{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ spec_title }} - {% if lang == 'uk' %}Специфікація{% else %}Specification{% endif %} AICyberTool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .language-switcher {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .language-switcher a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease;
+        }
+        
+        .language-switcher a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .sidebar h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar a {
+            display: block;
+            padding: 8px 12px;
+            color: #7f8c8d;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar a:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .sidebar a.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .main-content h1 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            font-size: 2.2em;
+        }
+        
+        .main-content h2 {
+            margin: 30px 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.6em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .main-content h3 {
+            margin: 25px 0 12px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .main-content h4 {
+            margin: 20px 0 10px 0;
+            color: #34495e;
+            font-size: 1.1em;
+        }
+        
+        .main-content p {
+            margin: 0 0 15px 0;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .main-content ul, .main-content ol {
+            margin: 0 0 15px 0;
+            padding-left: 25px;
+        }
+        
+        .main-content li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .main-content pre {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        
+        .main-content code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        
+        .main-content pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        
+        .main-content blockquote {
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .main-content th, .main-content td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .main-content th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status-info {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .status-info h3 {
+            margin: 0 0 10px 0;
+            color: #27ae60;
+        }
+        
+        .status-info p {
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-switcher">
+            <a href="/specs/{{ spec_name }}?lang=uk">🇺🇦 Українська</a>
+            <a href="/specs/{{ spec_name }}?lang=en">🇬🇧 English</a>
+        </div>
+        
+        <div class="header">
+            <h1>{{ spec_title }}</h1>
+            <p>{% if lang == 'uk' %}Детальна специфікація сервісу для MVP архітектури AICyberTool{% else %}Detailed service specification for AICyberTool MVP architecture{% endif %}</p>
+        </div>
+        
+        <div class="content-wrapper">
+            <div class="sidebar">
+                <h3>{% if lang == 'uk' %}Специфікації{% else %}Specifications{% endif %}</h3>
+                <ul>
+                    {% for spec in specs_files %}
+                    <li>
+                        <a href="{{ spec.path }}" {% if spec.active %}class="active"{% endif %}>
+                            {{ spec.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="main-content">
+                <div id="spec-content">
+                    {{ spec_content | safe }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/specs">{% if lang == 'uk' %}Всі специфікації{% else %}All Specifications{% endif %}</a>
+            <a href="/">{% if lang == 'uk' %}Головна{% else %}Home{% endif %}</a>
+            <a href="/tech-map">{% if lang == 'uk' %}Технічна карта{% else %}Technical Map{% endif %}</a>
+            <a href="/docs">{% if lang == 'uk' %}API Документація{% else %}API Docs{% endif %}</a>
+        </div>
+        
+        <div class="status-info">
+            <h3>✅ {% if lang == 'uk' %}Система працює{% else %}System Running{% endif %}</h3>
+            <p>{% if lang == 'uk' %}Версія{% else %}Version{% endif %}: {{ version }}</p>
+            <p>{% if lang == 'uk' %}Статус{% else %}Status{% endif %}: {{ status }}</p>
+            <div style="margin-top: 15px; font-size: 0.9em; color: #95a5a6;">
+                AICyberTool - {% if lang == 'uk' %}комплексна система управління цифровою трансформацією та кібербезпеки{% else %}comprehensive digital transformation and cybersecurity management system{% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Convert markdown content to HTML (basic conversion)
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('spec-content');
+            let html = content.innerHTML;
+            
+            // Convert headers
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Convert code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Convert lists
+            html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // Convert bold and italic
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            content.innerHTML = html;
+        });
+    </script>
+</body>
+</html>

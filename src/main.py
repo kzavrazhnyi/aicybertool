@@ -1,5 +1,5 @@
 """
-AI Cyber Tool - Main Application Entry Point
+AI Cyber Tool - Main Application
 Основний файл FastAPI додатку з реорганізованою структурою
 """
 
@@ -13,19 +13,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Імпорти з нашої реорганізованої структури
-from src.core.config import get_settings
-from src.db.database import init_database
-from src.routers import sessions, tech_map, message_bus
+from .core.config import get_settings
+from .db.database import init_database
+from .routers import sessions, tech_map, message_bus
 
-# Dependency Injection для MessageBus
-async def get_message_bus():
-    """Отримання MessageBus через Dependency Injection"""
-    if not app.state.message_bus:
-        raise HTTPException(
-            status_code=503, 
-            detail="Message Bus is not available"
-        )
-    return app.state.message_bus
+# Завантаження змінних оточення
+load_dotenv()
 
 # Отримання налаштувань
 settings = get_settings()
@@ -75,7 +68,7 @@ async def startup_event():
     
     # Ініціалізація Message Bus
     try:
-        from src.services.message_bus import MessageBus, MessageBusConfig
+        from .services.message_bus import MessageBus, MessageBusConfig
         message_bus_config = MessageBusConfig(
             rabbitmq_url=settings.rabbitmq_url,
             commands_exchange=settings.rabbitmq_commands_exchange,
@@ -126,15 +119,12 @@ async def api_root():
 @app.get("/api/config")
 async def get_config():
     """Отримати конфігурацію додатку (без чутливих даних)"""
-    from src.core.config import mask_url_credentials, get_database_type
-    
     return {
         "environment": settings.environment,
         "api_version": settings.api_version,
         "log_level": settings.log_level,
-        # Показуємо тільки тип БД, а не повний шлях
-        "database_type": get_database_type(settings.database_url),
-        "rabbitmq_url_public": mask_url_credentials(settings.rabbitmq_url),
+        "database_url": settings.database_url,
+        "rabbitmq_url": settings.rabbitmq_url,
         "rabbitmq_commands_exchange": settings.rabbitmq_commands_exchange,
         "rabbitmq_events_exchange": settings.rabbitmq_events_exchange,
         "access_token_expire_minutes": settings.access_token_expire_minutes
@@ -144,20 +134,10 @@ async def get_config():
 @app.get("/health")
 async def health_check():
     """Перевірка здоров'я додатку"""
-    # Перевіряємо MessageBus
-    bus_status = "not_available"
-    if app.state.message_bus:
-        try:
-            is_operational = await app.state.message_bus.ping()
-            bus_status = "operational" if is_operational else "degraded"
-        except Exception as e:
-            logger.warning(f"MessageBus health check failed: {e}")
-            bus_status = "error"
-    
     return {
         "status": "healthy",
         "version": settings.api_version,
         "environment": settings.environment,
         "database": "connected",
-        "message_bus": bus_status
+        "message_bus": "operational" if app.state.message_bus else "not_available"
     }
