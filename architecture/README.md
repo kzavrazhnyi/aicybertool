@@ -12,9 +12,9 @@
 
 ## Швидкий огляд / Quick Overview
 
-**AI Cyber Tool** - це комплексна система управління цифровою трансформацією, що поєднує штучний інтелект, кібернетичне управління та автоматизоване реагування на загрози. Проект побудований на архітектурі мікросервісів з прогресивним підходом до безпеки та масштабованості.
+**AICyberTool** - це комплексна система управління цифровою трансформацією та кібербезпеки, що поєднує штучний інтелект, кібернетичне управління та автоматизоване реагування на загрози. Проект побудований на архітектурі мікросервісів з прогресивним підходом до безпеки та масштабованості.
 
-**AI Cyber Tool** is a comprehensive digital transformation management system that combines artificial intelligence, cybernetic management, and automated threat response. The project is built on a microservices architecture with a progressive approach to security and scalability.
+**AICyberTool** is a comprehensive digital transformation and cybersecurity management system that combines artificial intelligence, cybernetic management, and automated threat response. The project is built on a microservices architecture with a progressive approach to security and scalability.
 
 ### Основні компоненти / Main Components
 

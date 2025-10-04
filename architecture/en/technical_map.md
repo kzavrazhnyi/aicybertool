@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**AI Cyber Tool** is a comprehensive digital transformation management system that combines artificial intelligence, cybernetic management, and automated threat response. The project is built on a microservices architecture with a progressive approach to security and scalability.
+**AICyberTool** is a comprehensive digital transformation and cybersecurity management system that combines artificial intelligence, cybernetic management, and automated threat response. The project is built on a microservices architecture with a progressive approach to security and scalability.
 
 The project is developed with progressive architecture evolution and multilingual support in mind.
 
